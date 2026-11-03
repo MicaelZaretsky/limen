@@ -324,6 +324,7 @@ The idea of drawing margins in Lua and the code that finds marks in the finished
 \toprule
 \thead{Checked} & \thead{With}\\\midrule
 Building & A clean TeX Live 2026 (TinyTeX, LuaHBTeX 1.24.0, LaTeX 2026-06-01) and TeX Live 2023 (Debian, LuaHBTeX 1.17.0, LaTeX 2023-11-01, some packages added by hand)\\
+Systems & Every push to GitHub is built on the current TeX Live: on Linux and macOS with all the checks, on Windows compilation and warnings only, because Poppler is not there\\
 Classes & article, report, book, scrartcl, memoir, beamer\\
 Layouts & A4, A5, Letter, landscape, two columns, two-sided, a narrow margin, a change of margins mid-document, tinted paper\\
 Content & Russian (babel), fancyhdr, titlesec, hyperref, TikZ, floats and footnotes on the closing page, \cs{DocumentMetadata} tagging (2026 only)\\
@@ -334,7 +335,7 @@ Tests & 31 documents through \opt{make test}: the text with and without art is t
 \end{tabularx}
 
 \medskip
-\textbf{Not checked:} Preview on macOS, Ghostscript, MuPDF, real printing on a printer or at a print shop, MiKTeX, Windows, macOS, PDF/A and PDF/X. Tags have only been checked in the file's contents: no document has gone through the PAC or veraPDF validators.
+\textbf{Not checked:} Preview on macOS, Ghostscript, MuPDF, real printing on a printer or at a print shop, MiKTeX, PDF/A and PDF/X. Tags have only been checked in the file's contents: no document has gone through the PAC or veraPDF validators.
 
 \textbf{Speed and size.} Building takes about half a second per page, and a file grows by about 120~KB per page. Viewers based on Poppler (Evince, Okular) take 1--4~s to show a page, because Poppler cuts meshes into small pieces. PDFium and pdf.js take 0.02 to 0.3~s. When the zoom changes often, Acrobat redraws a page with a delay, and figures can vanish for that time.
 
@@ -351,7 +352,6 @@ Tests & 31 documents through \opt{make test}: the text with and without art is t
 \textbf{Only a person can do this.}
 \begin{itemize}
 \item Open the files in Preview on a Mac, and print \opt{mode=paper} on an office printer. This is the largest remaining risk.
-\item Create the repository and wait for the first build: the files in \opt{.github/workflows} are written for Linux, Windows and macOS but have never run.
 \item Put a name in \opt{LICENSE} and \opt{build.lua}, check the package name on CTAN and submit the archive that \opt{l3build ctan} makes.
 \end{itemize}
 

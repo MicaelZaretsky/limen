@@ -1,5 +1,4 @@
-# Builds everything and runs the tests on every push, on three systems. Written but not yet run: GitHub is the first place
-# this can run, so expect to adjust the package list in the first days.
+# Builds everything and runs the tests on every push, on three systems.
 name: build
 on: [push, pull_request]
 jobs:

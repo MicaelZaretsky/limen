@@ -15,7 +15,7 @@
 - `make print-test`: one A4 sheet for checking a printer, `doc/limen-print-test.pdf`.
 - Fixed: after `make doc`, the Russian example stopped on a clean font cache, because the guide had left its relative font path
   there. All documents of the project now name their fonts the same way, and `\limeninitial` warns about this trap.
-- Tested on a clean TeX Live 2026 and looked over in Adobe Acrobat on Windows.
+- Tested on a clean TeX Live 2026, built on GitHub on Linux, macOS and Windows, and looked over in Adobe Acrobat on Windows.
 
 ## 0.1, November 2026
 

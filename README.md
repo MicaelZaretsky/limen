@@ -160,6 +160,8 @@ the nearest physics is a supercontinuum. The scale of the lines and the bends of
 
 - **Built with** a clean TeX Live 2026 (TinyTeX, LuaHBTeX 1.24.0, LaTeX 2026-06-01) and TeX Live 2023 (Debian, LuaHBTeX 1.17.0,
   LaTeX 2023-11-01, some packages added by hand).
+- **Systems:** every push to GitHub is built on the current TeX Live: on Linux and macOS with all the checks, on Windows
+  compilation and warnings only, because Poppler is not there.
 - **Classes:** article, report, book, scrartcl, memoir, beamer.
 - **Layouts:** A4, A5, Letter, landscape, two columns, two-sided, a narrow margin, a change of margins mid-document, tinted paper.
 - **Content:** Russian with babel, fancyhdr, titlesec, hyperref, TikZ, floats and footnotes on the closing page, tagging through
@@ -168,8 +170,8 @@ the nearest physics is a supercontinuum. The scale of the lines and the bends of
   looked over by hand: the cover, a page with figures and the last page.
 - **Without LaTeX:** Typst 0.15.1; SVG compared with the PDF; the browser page in Chromium.
 
-**Not checked:** Preview, Ghostscript, MuPDF, real printing, MiKTeX, Windows, macOS, PDF/A and PDF/X. Tags were
-checked in the file's contents, not with the PAC or veraPDF validators. The GitHub workflows are written but have not run yet.
+**Not checked:** Preview, Ghostscript, MuPDF, real printing, MiKTeX, PDF/A and PDF/X. Tags were checked in the file's
+contents, not with the PAC or veraPDF validators.
 
 **Speed and size:** about half a second per page to build and about 120 KB per page. Viewers based on Poppler (Evince,
 Okular) take 1 to 4 s to show a page, because Poppler cuts meshes into small pieces; PDFium and pdf.js take 0.02 to 0.3 s.

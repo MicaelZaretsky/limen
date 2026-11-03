@@ -338,6 +338,7 @@ python3 typst/build.py report.typ --palette ultramarine
 \toprule
 \thead{Проверено} & \thead{На чём}\\\midrule
 Сборка & Чистый TeX Live 2026 (TinyTeX, LuaHBTeX 1.24.0, LaTeX 2026-06-01) и TeX Live 2023 (Debian, LuaHBTeX 1.17.0, LaTeX 2023-11-01, часть пакетов добавлена вручную)\\
+Системы & Каждая загрузка на GitHub собирается на текущем TeX Live: на Linux и macOS со всеми проверками, на Windows только сборка и предупреждения, потому что там нет Poppler\\
 Классы & article, report, book, scrartcl, memoir, beamer\\
 Разметка & А4, А5, Letter, альбомная, две колонки, двусторонняя печать, узкое поле, смена полей посреди документа, цветная бумага\\
 Содержимое & Русский язык (babel), fancyhdr, titlesec, hyperref, TikZ, плавающие рисунки и сноски на странице финала, теги \cs{DocumentMetadata} (только 2026)\\
@@ -348,7 +349,7 @@ python3 typst/build.py report.typ --palette ultramarine
 \end{tabularx}
 
 \medskip
-\textbf{Не проверено:} Preview на macOS, Ghostscript, MuPDF, настоящая печать на принтере и в типографии, MiKTeX, Windows, macOS, PDF/A и PDF/X. Теги проверены только по содержимому файла: валидаторами PAC и veraPDF документы не прогонялись.
+\textbf{Не проверено:} Preview на macOS, Ghostscript, MuPDF, настоящая печать на принтере и в типографии, MiKTeX, PDF/A и PDF/X. Теги проверены только по содержимому файла: валидаторами PAC и veraPDF документы не прогонялись.
 
 \textbf{Скорость и размер.} Сборка занимает около половины секунды на страницу, файл растёт примерно на 120~КБ на страницу. В просмотрщиках с Poppler (Evince, Okular) страница появляется за 1--4~с, потому что он дробит сетки на мелкие кусочки. В PDFium и pdf.js это занимает от 0,02 до 0,3~с. Acrobat при частой смене масштаба дорисовывает страницу с задержкой, и рисунки на это время могут пропадать.
 
@@ -365,7 +366,6 @@ python3 typst/build.py report.typ --palette ultramarine
 \textbf{Сделать может только человек.}
 \begin{itemize}
 \item Открыть файлы в Preview на Mac, распечатать \opt{mode=paper} на обычном принтере. Это самый большой оставшийся риск.
-\item Завести репозиторий и дождаться первого запуска сборки: файлы \opt{.github/workflows} написаны для Linux, Windows и macOS, но ещё ни разу не выполнялись.
 \item Вписать имя в \opt{LICENSE} и \opt{build.lua}, проверить имя пакета на CTAN и отправить архив, собранный \opt{l3build ctan}.
 \end{itemize}
 
