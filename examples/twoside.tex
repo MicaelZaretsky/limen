@@ -1,0 +1,13 @@
+% A two-sided A5 book: the art changes sides with the page. Run lualatex twice.
+\documentclass[10pt,a5paper,twoside]{book}
+\usepackage[a5paper,inner=14mm,outer=38mm,top=20mm,bottom=20mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=peacock]{limen}
+\begin{document}
+\chapter{A small book}
+\lipsum[1-3]
+\section{First section}
+\lipsum[4-7]
+\section{Second section}
+\lipsum[8-12]
+\end{document}

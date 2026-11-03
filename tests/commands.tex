@@ -1,0 +1,28 @@
+% \limenpause, \limenoff, \limenon, \limenlevel, \limenend, floats and footnotes at the very end.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=graphite,seed=7]{limen}
+\begin{document}
+\section{Normal}\lipsum[1-6]
+\clearpage
+\limenpause
+\section{This page has no art}\lipsum[7-9]
+\clearpage
+\limenlevel{0.9}
+\section{Forced stage 0.9}\lipsum[10-12]
+\clearpage
+\limenlevel{}
+\limenoff
+\section{Off}\lipsum[13-14]
+\clearpage
+\limenon
+\section{On again}\lipsum[15-17]
+\clearpage
+\section{Text with a footnote and a float at the bottom}
+Short text\footnote{A footnote must stay above the lake.}.
+\begin{figure}[b]\centering\rule{6cm}{2cm}\caption{A bottom float}\end{figure}
+\limenend
+\clearpage
+\section{Appendix after the close}\lipsum[18-20]
+\end{document}

@@ -1,0 +1,12 @@
+% Every switch at once, on tinted paper: \pagecolor and paper= must agree, the art must stay above the colour.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=70mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{xcolor}
+\usepackage{lipsum}
+\usepackage[palette=infrared,paper=FBF6EA,column=5,density=0.6,caustics=1,headrule=false,seed=3,story=chapter,threshold=0.1]{limen}
+\pagecolor[HTML]{FBF6EA}
+\begin{document}
+\section{Part one}\lipsum[1-7]
+\limenrestart
+\section{Part two}\lipsum[8-14]
+\end{document}

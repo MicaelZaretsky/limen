@@ -1,0 +1,12 @@
+% beam=mono: one colour from the palette, with the same story.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=emerald,beam=mono,caustic=mix]{limen}
+\begin{document}
+\limeninitial{O}ne colour. \lipsum[1]
+\section{Below}\lipsum[2-6]
+\section{Rise}\lipsum[7-13]
+\limenrule
+\section{Above}\lipsum[14-22]
+\end{document}

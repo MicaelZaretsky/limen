@@ -1,0 +1,14 @@
+% A stress test: a long document with many headings.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\newcount\n \n=0
+\loop\advance\n by 1
+\section{Section \the\n}
+\lipsum[1-7]
+\subsection{Part \the\n}
+\lipsum[8-12]
+\ifnum\n<20\repeat
+\end{document}

@@ -1,0 +1,10 @@
+% memoir has its own heading code: automatic stars may not work, the document must still build.
+\documentclass[10pt,a4paper]{memoir}
+\setlrmarginsandblock{58mm}{17mm}{*}\setulmarginsandblock{30mm}{29mm}{*}\checkandfixthelayout
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\chapter{A chapter}\lipsum[1-3]
+\section{A section}\lipsum[4-8]
+\section{Another}\lipsum[9-12]
+\end{document}

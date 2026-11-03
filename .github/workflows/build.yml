@@ -1,0 +1,42 @@
+# Builds everything and runs the tests on every push, on three systems. Written but not yet run: GitHub is the first place
+# this can run, so expect to adjust the package list in the first days.
+name: build
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: TeX-Live/setup-texlive-action@v3
+        with:
+          packages: |
+            scheme-basic
+            collection-luatex
+            collection-latexrecommended
+            collection-latexextra
+            collection-pictures
+            collection-langcyrillic
+            collection-fontsrecommended
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Poppler on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils qpdf
+      - name: Poppler on macOS
+        if: runner.os == 'macOS'
+        run: brew install poppler qpdf
+      - name: Test
+        run: python tests/run.py
+      - name: Guide and test sheet
+        if: runner.os == 'Linux'
+        run: make doc print-test
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux'
+        with:
+          name: limen-guide
+          path: build/limen-guide*.pdf

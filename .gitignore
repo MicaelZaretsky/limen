@@ -1,0 +1,15 @@
+build/
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.pdf
+!doc/limen-guide.pdf
+!doc/limen-guide-en.pdf
+!doc/limen-print-test.pdf
+typst/limen-art/
+web/fragment.html
+limen-ctan.zip

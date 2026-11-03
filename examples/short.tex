@@ -1,0 +1,11 @@
+% story=flat: one page has no room for a story, so stay at one stage. Run lualatex twice.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=emerald,story=flat,level=0.7,finale=false]{limen}
+\begin{document}
+\section*{One page at 532 nm}
+\lipsum[1-4]
+\limenrule
+\lipsum[5-6]
+\end{document}

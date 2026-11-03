@@ -1,0 +1,584 @@
+<title>Стенд limen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Lora:wght@500;700&display=swap&subset=cyrillic,latin">
+<style>
+/* An optical bench at night: the tool wears the package's own main palette, and the sheet is the only bright thing.
+   Layout: controls on the left, the sheet in the middle, what to paste into a document on the right. */
+:root {
+  color-scheme: dark;
+  --night: #0A1030;
+  --panel: #111A45;
+  --rule: #2A3478;
+  --text: #ECE9DD;
+  --muted: #A9ADCB;
+  --gold: #F2BE46;
+  --sheet: #FFFFFF;
+  --ink: #1E1D22;
+  --bar: #D9DAE3;
+  --display: "Lora", Georgia, "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { background: var(--night); color: var(--text); font: 14px/1.45 var(--ui); margin: 0; }
+.wrap { display: grid; grid-template-columns: 300px minmax(0, 1fr) 340px; gap: 24px; padding-block: 20px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  max-width: 1560px; margin: 0 auto; align-items: start; }
+header { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+h1 { font: 700 26px/1.1 var(--display); margin: 0; letter-spacing: .01em; }
+header p { margin: 0; color: var(--muted); max-width: 62ch; min-width: 0; flex: 1 1 280px; }
+#lang { font: 500 12px var(--mono); background: transparent; color: var(--muted); border: 1px solid var(--rule); border-radius: 3px; padding: 4px 8px; cursor: pointer; }
+.group { display: grid; gap: 7px; padding-block: 12px; border-top: 1px solid var(--rule); }
+.group:first-child { border-top: 0; padding-top: 0; }
+.label { font: 500 11px/1.3 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.label output { color: var(--gold); text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.seg button { flex: 1; background: transparent; color: var(--muted); border: 0; border-left: 1px solid var(--rule); padding: 7px 4px; font: 500 13px var(--ui); cursor: pointer; min-width: 0; }
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--gold); color: #17110A; }
+.chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.chip { background: var(--chipbg, #0a1458); color: #fff; border: 1px solid var(--rule); border-radius: 3px; padding: 8px 6px 6px; cursor: pointer; text-align: left; font: 500 12px var(--ui); min-width: 0; overflow: hidden; }
+.chip i { display: block; height: 3px; margin-top: 5px; background: var(--chipline); }
+.chip[aria-pressed="true"] { outline: 2px solid var(--gold); outline-offset: 1px; }
+input[type=range] { width: 100%; accent-color: var(--gold); margin: 0; }
+select, input[type=number] { background: var(--panel); color: var(--text); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 7px; font: 13px var(--ui); width: 100%; }
+button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.row { display: flex; gap: 6px; align-items: center; }
+.row > * { min-width: 0; }
+.ghost { background: transparent; color: var(--text); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 9px; font: 500 13px var(--ui); cursor: pointer; white-space: nowrap; }
+.ghost:hover { border-color: var(--gold); }
+#curve { display: block; width: 100%; height: 62px; }
+#curve text { font: 10px var(--mono); fill: var(--muted); }
+.stage { display: grid; gap: 12px; min-width: 0; justify-items: center; }
+.sheet { position: relative; width: min(100%, 620px); aspect-ratio: 21 / 29.7; background: var(--sheet); color: var(--ink); overflow: hidden; container-type: inline-size; box-shadow: 0 0 0 1px var(--rule), 0 14px 44px rgba(0, 0, 0, .5); }
+.sheet img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.copy { position: absolute; left: 27.6%; right: 8.1%; top: 0; bottom: 0; font: 1.72cqw/1.45 var(--display); }
+.copy h2, .copy h3 { position: absolute; left: 0; margin: 0; font-family: var(--display); font-weight: 700; }
+.copy h2 { font-size: 2.5cqw; color: var(--headc, #1B2F8F); line-height: 1.1; }
+.copy h3 { font-size: 2cqw; color: var(--headc, #1B2F8F); line-height: 1.1; }
+.copy .big { font-size: 4.3cqw; }
+.copy p { position: absolute; left: 0; right: 0; margin: 0; }
+.copy .bars { position: absolute; left: 0; right: 0; background: repeating-linear-gradient(var(--bar) 0 .55cqw, transparent .55cqw 2.2cqw); }
+.pageno { position: absolute; right: 8.1%; bottom: 3.4%; font: 1.5cqw var(--ui); color: #7a7a86; }
+.pageno.white { color: #fff; }
+.coverT { position: absolute; left: 8%; top: 7%; right: 8%; color: #fff; }
+.coverT b { display: block; font: 700 6cqw/1.1 var(--display); }
+.coverT span { display: block; font: 2.6cqw/1.3 var(--display); margin-top: 1.6cqw; }
+.coverT.ink { color: var(--headc); }
+#status { min-height: 1.45em; color: var(--muted); font: 12px var(--mono); text-align: center; }
+#status.err { color: #FF9C8A; }
+.strip { display: flex; gap: 6px; width: 100%; max-width: 760px; overflow-x: auto; padding-bottom: 4px; justify-content: safe center; }
+.thumb { flex: 0 0 62px; background: var(--sheet); border: 0; padding: 0; position: relative; aspect-ratio: 21 / 29.7; cursor: pointer; outline: 1px solid var(--rule); }
+.thumb img { width: 100%; height: 100%; display: block; }
+.thumb span { position: absolute; right: 2px; bottom: 1px; font: 500 9px var(--mono); color: #55586e; background: rgba(255, 255, 255, .85); padding: 0 2px; }
+.thumb[aria-current="true"] { outline: 2px solid var(--gold); }
+aside h2 { font: 500 11px/1.3 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+pre { background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 9px 10px; margin: 0; font: 12px/1.5 var(--mono); overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.out { display: grid; gap: 14px; }
+.out section { display: grid; gap: 6px; min-width: 0; }
+.out .row { justify-content: space-between; }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+a { color: var(--gold); }
+@media (max-width: 1180px) {
+  .wrap { grid-template-columns: 280px minmax(0, 1fr); }
+  aside.out { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+@media (max-width: 760px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .stage { order: -1; grid-row: 2; }
+  .controls { grid-row: 3; }
+  aside.out { grid-row: 4; }
+  header { grid-row: 1; }
+  .strip { justify-content: flex-start; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>limen</h1>
+    <p id="lead"></p>
+    <button id="lang" type="button">EN</button>
+  </header>
+
+  <div class="controls">
+    <div class="group"><div class="label" id="l-palette"></div><div class="chips" id="palettes"></div></div>
+    <div class="group"><div class="label" id="l-mode"></div><div class="seg" id="mode"></div></div>
+    <div class="group">
+      <div class="label" id="l-beam"></div><div class="seg" id="beam"></div>
+      <div id="nmrow" hidden>
+        <div class="label"><span id="l-nm"></span><output id="nmv"></output></div>
+        <input id="nm" type="range" min="400" max="700" step="1" value="532" aria-labelledby="l-nm">
+      </div>
+    </div>
+    <div class="group">
+      <div class="label" id="l-story"></div><div class="seg" id="story"></div>
+      <svg id="curve" viewBox="0 0 280 62" preserveAspectRatio="none" role="img" aria-labelledby="l-th"></svg>
+      <div class="label"><span id="l-th"></span><output id="thv"></output></div>
+      <input id="th" type="range" min="0" max="0.9" step="0.01" value="0.25" aria-labelledby="l-th">
+    </div>
+    <div class="group">
+      <div class="label" id="l-caustic"></div>
+      <div class="row"><select id="caustic" aria-labelledby="l-caustic"></select>
+      <select id="count" aria-label="count" style="flex:0 0 62px"><option>0</option><option>1</option><option selected>2</option></select></div>
+    </div>
+    <div class="group">
+      <div class="label"><span id="l-density"></span><output id="dv"></output></div>
+      <input id="density" type="range" min="0.4" max="2" step="0.05" value="1" aria-labelledby="l-density">
+    </div>
+    <div class="group">
+      <div class="label" id="l-seed"></div>
+      <div class="row"><input id="seed" type="number" min="1" max="99999" value="1" aria-labelledby="l-seed" style="flex:1 1 60px"><button class="ghost" id="reseed" type="button" style="flex:0 0 auto"></button></div>
+    </div>
+  </div>
+
+  <main class="stage">
+    <div class="sheet" id="sheet"><img id="art" alt=""><div id="copy"></div></div>
+    <div id="status" role="status"></div>
+    <div class="strip" id="strip"></div>
+  </main>
+
+  <aside class="out">
+    <section><div class="row"><h2>LaTeX</h2><button class="ghost" data-copy="c-latex" type="button"></button></div><pre id="c-latex"></pre></section>
+    <section><div class="row"><h2>Typst</h2><button class="ghost" data-copy="c-typst" type="button"></button></div><pre id="c-typst"></pre></section>
+    <section><div class="row"><h2 id="h-cli"></h2><button class="ghost" data-copy="c-cli" type="button"></button></div><pre id="c-cli"></pre></section>
+    <section><div class="row"><h2>SVG</h2><button class="ghost" id="svgcopy" type="button"></button></div><p class="note" id="n-svg"></p></section>
+    <p class="note" id="n-speed"></p>
+  </aside>
+</div>
+
+<script type="text/plain" id="src-fengari">/*__FENGARI__*/</script>
+<script type="text/plain" id="src-limen-pdf">--__LIMEN_PDF__</script>
+<script type="text/plain" id="src-limen-art">--__LIMEN_ART__</script>
+<script type="text/plain" id="src-limen-palettes">--__LIMEN_PALETTES__</script>
+<script type="text/plain" id="src-limen-svg">--__LIMEN_SVG__</script>
+<script>
+'use strict';
+const PW = 21, PH = 29.7, PAGES = 8;
+const T = {
+  ru: {
+    lead: 'Подбор полей для пакета limen. Рисунок считает тот же код, что и LuaLaTeX. Звёзды стоят у заголовков, поэтому в вашем документе стиль будет тем же, а расположение своим. Страница считается прямо в браузере, около двух секунд.',
+    palette: 'Палитра', mode: 'Режим', night: 'Экран', paper: 'Бумага', beam: 'Луч', spectrum: 'Спектр', mono: 'Один цвет', nm: 'Длина волны',
+    story: 'Сюжет', threshold: 'С порогом', flat: 'Одна стадия', th: 'Порог, доля документа', level: 'Стадия',
+    caustic: 'Каустики и сколько на странице', ellipse: 'Эллипс', cardioid: 'Кардиоида', nephroid: 'Нефроида', rings: 'Дифракция', speckle: 'Спекл', mix: 'Вперемешку',
+    density: 'Плотность линий', seed: 'Зерно', reseed: 'Другой рисунок', copy: 'Копировать', copied: 'Скопировано', cli: 'Команда для одной страницы',
+    svgcopy: 'Копировать SVG', svgnote: 'Текущая страница в полном качестве. Считается несколько секунд.', speed: 'Браузерный показ упрощён: сетки реже, чем в готовом PDF. Lua здесь работает через Fengari (MIT).',
+    drawing: 'Считаю страницу', ready: 'Готово', pending: 'в очереди', fail: 'Не удалось запустить расчёт в этом браузере', cover: 'Обл.',
+    copyfail: 'Браузер не дал скопировать. Текст выделен, скопируйте его сами.', svgready: 'SVG скопирован', svgwork: 'Считаю SVG в полном качестве',
+    book: 'Как свет заслуживает цвет', sub: 'Пример для подбора полей',
+    pages: [
+      [['big', 'Как свет заслуживает цвет'], ['t', 'На первых страницах луч тонкий и почти белый, поле тёмное, линии только проступают.'], ['h', 'Ниже порога']],
+      [['h3', 'Что видно на полях'], ['t', 'Спектр в узком луче сложен в белый.'], ['h', 'Накачка растёт']],
+      [['h', 'Порог'], ['t', 'Усиление за обход сравнялось с потерями. Здесь обычно начинается рост.']],
+      [['h3', 'Первые веретёна'], ['t', 'Спектр начинает расходиться.'], ['h', 'Выше порога']],
+      [['h3', 'Поле набирает цвет'], ['h', 'Рост']],
+      [['h', 'Широкий спектр'], ['h3', 'Каустики ярче']],
+      [['h3', 'Почти полная стадия'], ['h', 'Вывод']],
+      [['h', 'Последняя страница'], ['t', 'Текст кончился, и ночь разливается под ним. Луч проходит большую каустику и уходит за край листа.']],
+    ],
+  },
+  en: {
+    lead: 'Choose margins for the limen package. The art comes from the same code LuaLaTeX runs. Stars follow the headings, so your document gets the same style with its own arrangement. A page is computed right here in the browser, in about two seconds.',
+    palette: 'Palette', mode: 'Mode', night: 'Screen', paper: 'Paper', beam: 'Beam', spectrum: 'Spectrum', mono: 'One colour', nm: 'Wavelength',
+    story: 'Story', threshold: 'Threshold', flat: 'One stage', th: 'Threshold, share of the document', level: 'Stage',
+    caustic: 'Caustics and how many per page', ellipse: 'Ellipse', cardioid: 'Cardioid', nephroid: 'Nephroid', rings: 'Diffraction', speckle: 'Speckle', mix: 'Mixed',
+    density: 'Line density', seed: 'Seed', reseed: 'Another picture', copy: 'Copy', copied: 'Copied', cli: 'Command for one page',
+    svgcopy: 'Copy SVG', svgnote: 'The current page at full quality. Takes a few seconds.', speed: 'The browser shows a simplified picture: meshes are coarser than in the finished PDF. Lua runs here through Fengari (MIT).',
+    drawing: 'Drawing page', ready: 'Ready', pending: 'queued', fail: 'This browser could not start the computation', cover: 'Cover',
+    copyfail: 'The browser refused to copy. The text is selected: copy it yourself.', svgready: 'SVG copied', svgwork: 'Drawing the SVG at full quality',
+    book: 'How light earns its colour', sub: 'A sample for choosing margins',
+    pages: [
+      [['big', 'How light earns its colour'], ['t', 'On the first pages the beam is thin and almost white, the field is dark and the lines are only beginning to show.'], ['h', 'Below the threshold']],
+      [['h3', 'What the margin shows'], ['t', 'In a narrow beam the spectrum adds up to white.'], ['h', 'The pump rises']],
+      [['h', 'The threshold'], ['t', 'Gain per round trip has met the losses. This is where the rise usually begins.']],
+      [['h3', 'The first spindles'], ['t', 'The spectrum starts to open.'], ['h', 'Above it']],
+      [['h3', 'The field gains colour'], ['h', 'The rise']],
+      [['h', 'A wide spectrum'], ['h3', 'Brighter caustics']],
+      [['h3', 'Almost the full stage'], ['h', 'Conclusion']],
+      [['h', 'The last page'], ['t', 'The text has ended and the night spreads below it. The beam passes a large caustic and leaves through the edge of the sheet.']],
+    ],
+  },
+};
+// where the headings of each sample page sit, in cm from the top of the sheet
+const LAYOUT = [[3.1, 6.2, 12.4], [3.2, 5.6, 17.4], [7.8, 10.2], [3.2, 5.8, 15.6], [6.2, 18.6], [3.4, 15.1], [9.4, 20.4], [3.2, 5.2]];
+const TEXTEND = 16.8; // on the last page, cm from the bottom of the sheet
+const PALS = {
+  ultramarine: ['#0A1458', '#F2BE46', '#1B2F8F', 532], peacock: ['#0A1650', '#9FE8DC', '#0E5F73', 532], ruby: ['#2A0614', '#FFC9A3', '#8E1B3A', 694],
+  emerald: ['#04231C', '#C8F27A', '#0B6B4B', 532], infrared: ['#150A2E', '#FFC46B', '#6A1F86', 1064], graphite: ['#0B0E14', '#D6DEE8', '#2A3442', 532],
+};
+const DEF = { palette: 'ultramarine', mode: 'night', beam: 'spectrum', wavelength: 0, story: 'threshold', threshold: 0.25, level: 0.75, caustic: 'ellipse', caustics: 2, density: 1, seed: 1 };
+const S = Object.assign({}, DEF);
+let lang = (navigator.language || 'ru').toLowerCase().startsWith('ru') ? 'ru' : 'en';
+let current = 5;
+const $ = (id) => document.getElementById(id);
+
+// ------------------------------------------------------------------ settings in the address, as one plain word
+function encode() {
+  return [S.palette, S.mode, S.beam, 'w' + S.wavelength, S.story, 't' + Math.round(S.threshold * 100), 'l' + Math.round(S.level * 100), S.caustic, 'c' + S.caustics, 'd' + Math.round(S.density * 100), 's' + S.seed, 'p' + current].join('-');
+}
+function decode(h) {
+  const a = h.replace(/^#/, '').split('-');
+  if (a.length !== 12 || !PALS[a[0]]) return;
+  S.palette = a[0]; S.mode = a[1] === 'paper' ? 'paper' : 'night'; S.beam = a[2] === 'mono' ? 'mono' : 'spectrum';
+  S.wavelength = +a[3].slice(1) || 0; S.story = a[4] === 'flat' ? 'flat' : 'threshold'; S.threshold = (+a[5].slice(1) || 0) / 100;
+  S.level = (+a[6].slice(1) || 0) / 100; S.caustic = a[7]; S.caustics = +a[8].slice(1) || 0; S.density = (+a[9].slice(1) || 100) / 100;
+  S.seed = +a[10].slice(1) || 1; current = Math.min(PAGES, Math.max(0, +a[11].slice(1) || 1));
+}
+
+// ------------------------------------------------------------------ the worker: Fengari, the package's own Lua, a fast rasteriser
+const WORKER = `
+self.onmessage = (e) => { try { const r = job(e.data); self.postMessage(r, [r.pixels.buffer]); } catch (err) { self.postMessage({ key: e.data.key, error: String(err && err.message || err) }); } };
+let L, target;
+function triangle(px, W, H, ax, ay, ar, ag, ab, bx, by, br, bg, bb, cx, cy, cr, cg, cb) {
+  const den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+  if (den > -1e-9 && den < 1e-9) return;
+  const x0 = Math.max(0, Math.floor(Math.min(ax, bx, cx))), x1 = Math.min(W - 1, Math.ceil(Math.max(ax, bx, cx)));
+  const y0 = Math.max(0, Math.floor(Math.min(ay, by, cy))), y1 = Math.min(H - 1, Math.ceil(Math.max(ay, by, cy)));
+  const k1 = (by - cy) / den, k2 = (cx - bx) / den, k3 = (cy - ay) / den, k4 = (ax - cx) / den;
+  for (let y = y0; y <= y1; y++) {
+    const py = y + 0.5 - cy;
+    let i = (y * W + x0) * 4;
+    for (let x = x0; x <= x1; x++, i += 4) {
+      const qx = x + 0.5 - cx;
+      const u = k1 * qx + k2 * py;
+      if (u < -0.02) continue;
+      const v = k3 * qx + k4 * py;
+      if (v < -0.02) continue;
+      const w = 1 - u - v;
+      if (w < -0.02) continue;
+      px[i] = (u * ar + v * br + w * cr) * 255;
+      px[i + 1] = (u * ag + v * bg + w * cg) * 255;
+      px[i + 2] = (u * ab + v * bb + w * cb) * 255;
+      px[i + 3] = 255;
+    }
+  }
+}
+function mesh(Ls) {
+  const { lua } = fengari;
+  const s = lua.lua_tolstring(Ls, 1), ncol = lua.lua_tointeger(Ls, 2), nrow = lua.lua_tointeger(Ls, 3), mp = lua.lua_tonumber(Ls, 4);
+  const v = new Float32Array(s.buffer.slice(s.byteOffset, s.byteOffset + s.length));
+  const { px, W, H, scale, ph } = target;
+  const X = (i) => (mp ? mp - v[i] : v[i]) * scale, Y = (i) => (ph - v[i + 1]) * scale;
+  for (let j = 0; j < nrow - 1; j++) for (let i = 0; i < ncol - 1; i++) {
+    const a = (j * ncol + i) * 5, c = a + 5, e = ((j + 1) * ncol + i) * 5, d = e + 5;
+    triangle(px, W, H, X(a), Y(a), v[a + 2], v[a + 3], v[a + 4], X(c), Y(c), v[c + 2], v[c + 3], v[c + 4], X(d), Y(d), v[d + 2], v[d + 3], v[d + 4]);
+    triangle(px, W, H, X(a), Y(a), v[a + 2], v[a + 3], v[a + 4], X(d), Y(d), v[d + 2], v[d + 3], v[d + 4], X(e), Y(e), v[e + 2], v[e + 3], v[e + 4]);
+  }
+  return 0;
+}
+function boot(mods) {
+  const { lua, lauxlib, lualib, to_luastring, to_jsstring } = fengari;
+  L = lauxlib.luaL_newstate();
+  lualib.luaL_openlibs(L);
+  lua.lua_pushcfunction(L, mesh);
+  lua.lua_setglobal(L, to_luastring('js_mesh'));
+  const pre = Object.keys(mods.lua).map((k) => 'package.preload[' + JSON.stringify(k) + '] = load(' + JSON.stringify(mods.lua[k]) + ', ' + JSON.stringify(k) + ')').join('\\n');
+  const init = pre + '\\n' + 'local Svg = require("limen-svg"); local Art = require("limen-art")\\n'
+    + 'function limen_run(o, s, q)\\n  Art.set_quality(q)\\n'
+    + '  s.onmesh = function(rows, ncol, mp)\\n    local t, n, pack = {}, 0, string.pack\\n'
+    + '    for _, r in ipairs(rows) do for i = 1, ncol do local v = r[i]; n = n + 1; t[n] = pack("<fffff", v[1], v[2], v[3], v[4], v[5]) end end\\n'
+    + '    js_mesh(table.concat(t), ncol, #rows, mp or 0)\\n  end\\n'
+    + '  local cv = Svg.page(o, s)\\n  return cv:vector()\\nend';
+  check(lauxlib.luaL_loadstring(L, to_luastring(init)));
+  check(lua.lua_pcall(L, 0, 0, 0));
+}
+function check(st) { if (st !== 0) { const { lua, to_jsstring } = fengari; throw new Error(to_jsstring(lua.lua_tostring(L, -1))); } }
+function lit(v) {
+  if (v === null || v === undefined) return 'nil';
+  if (typeof v === 'string') return JSON.stringify(v);
+  if (typeof v !== 'object') return String(v);
+  if (Array.isArray(v)) return '{' + v.map(lit).join(',') + '}';
+  return '{' + Object.keys(v).map((k) => k + '=' + lit(v[k])).join(',') + '}';
+}
+function job(d) {
+  if (d.boot) { boot(d.boot); return { key: 'boot', pixels: new Uint8ClampedArray(0) }; }
+  const { lua, lauxlib, to_luastring, to_jsstring } = fengari;
+  const W = Math.ceil(d.pw * d.scale), H = Math.ceil(d.ph * d.scale);
+  target = { px: new Uint8ClampedArray(W * H * 4), W, H, scale: d.scale, ph: d.ph };
+  check(lauxlib.luaL_loadstring(L, to_luastring('return limen_run(' + lit(d.o) + ',' + lit(d.s) + ',' + lit(d.q) + ')')));
+  check(lua.lua_pcall(L, 0, 1, 0));
+  const vector = to_jsstring(lua.lua_tostring(L, -1));
+  lua.lua_settop(L, 0);
+  return { key: d.key, pixels: target.px, W, H, vector, q: d.q, page: d.page };
+}
+`;
+
+let worker, busy = false;
+const cache = new Map();   // key -> { url, svg, lake }
+let queue = [];
+const canvas = document.createElement('canvas');
+
+function options() {
+  const o = { palette: S.palette, mode: S.mode, beam: S.beam, story: S.story, threshold: S.threshold, level: S.level, caustic: S.caustic, caustics: S.caustics, density: S.density, seed: S.seed };
+  if (S.beam === 'mono' && S.wavelength) o.wavelength = S.wavelength;
+  return o;
+}
+function spec(page) {
+  if (page === 0) return { cover: 'spectrum' };
+  const s = { page, pages: PAGES, closing: page === PAGES, marks: [] };
+  LAYOUT[page - 1].forEach((y, i) => {
+    const kind = TEXTS()[page - 1].filter((e) => e[0] !== 't' && e[0] !== 'big')[i];
+    if (kind) s.marks.push({ kind: 'heading', y: PH - y - 0.3, arg: kind[0] === 'h' ? 1 : 2 });
+  });
+  if (page === PAGES) s.textend = TEXTEND;
+  return s;
+}
+const TEXTS = () => T[lang].pages;
+const keyOf = (page, q) => JSON.stringify([options(), page, q]);
+
+function pump() {
+  if (busy || !queue.length) { if (!busy) setStatus(); return; }
+  const { page, q, key, done } = queue.shift();
+  if (cache.has(key)) { if (done) done(cache.get(key)); pump(); return; }
+  busy = true;
+  setStatus(page, q);
+  const s = spec(page);
+  worker.postMessage({ o: options(), s: Object.assign(s, { dpi: q === 'full' ? 110 : 80 }), q, key, page, pw: PW, ph: PH, scale: q === 'full' ? 110 / 2.54 : 80 / 2.54 });
+  worker.done = done;
+}
+function compose(r) {
+  canvas.width = r.W; canvas.height = r.H;
+  canvas.getContext('2d').putImageData(new ImageData(r.pixels, r.W, r.H), 0, 0);
+  const png = canvas.toDataURL('image/png');
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + PW + 'cm" height="' + PH + 'cm" viewBox="0 0 ' + PW + ' ' + PH + '">'
+    + '<image x="0" y="0" width="' + (r.W / r.scale) + '" height="' + (r.H / r.scale) + '" preserveAspectRatio="none" xlink:href="' + png + '"/>'
+    + '<g transform="matrix(1 0 0 -1 0 ' + PH + ')">' + r.vector + '</g></svg>';
+  return { svg, url: URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })) };
+}
+function onResult(e) {
+  const r = e.data;
+  if (r.key === 'boot') { refresh(); return; }
+  busy = false;
+  if (r.error) { setStatus(null, null, T[lang].fail + ': ' + r.error); return; }
+  r.scale = (r.q === 'full' ? 110 : 80) / 2.54;
+  const item = compose(r);
+  cache.set(r.key, item);
+  if (worker.done) worker.done(item);
+  showIfCurrent(r.page);
+  pump();
+}
+function setStatus(page, q, err) {
+  const el = $('status');
+  el.classList.toggle('err', !!err);
+  if (err) { el.textContent = err; return; }
+  if (page === undefined || page === null) { el.textContent = T[lang].ready; return; }
+  const left = queue.length;
+  el.textContent = T[lang].drawing + ' ' + (page === 0 ? T[lang].cover : page) + (left ? ' · ' + T[lang].pending + ': ' + left : '');
+}
+function showIfCurrent(page) {
+  const it = cache.get(keyOf(page, 'preview'));
+  if (!it) return;
+  if (page === current) $('art').src = it.url;
+  const th = document.querySelector('.thumb[data-page="' + page + '"] img');
+  if (th) th.src = it.url;
+}
+function request(page, q, done, front) {
+  const key = keyOf(page, q);
+  if (cache.has(key)) { if (done) done(cache.get(key)); return; }
+  const item = { page, q, key, done };
+  if (front) queue.unshift(item); else queue.push(item);
+}
+let timer;
+function refresh() {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    try { history.replaceState(null, '', '#' + encode()); } catch (e) { /* the frame may refuse */ }
+    queue = [];
+    request(current, 'preview', null, true);
+    const order = [];
+    for (let d = 1; d <= PAGES; d++) { if (current + d <= PAGES) order.push(current + d); if (current - d >= 0) order.push(current - d); }
+    order.forEach((p) => request(p, 'preview'));
+    showIfCurrent(current);
+    for (let p = 0; p <= PAGES; p++) showIfCurrent(p);
+    drawCopy(); drawCurve(); drawCode(); markButtons();
+    pump();
+  }, 90);
+}
+
+// ------------------------------------------------------------------ the text on the sheet
+function drawCopy() {
+  const box = $('copy');
+  box.innerHTML = '';
+  const head = PALS[S.palette][2];
+  box.style.setProperty('--headc', head);
+  if (current === 0) {
+    const t = document.createElement('div');
+    t.className = 'coverT' + (S.mode === 'paper' ? ' ink' : '');
+    t.style.setProperty('--headc', head);
+    const b = document.createElement('b'), sp = document.createElement('span');
+    b.textContent = T[lang].book; sp.textContent = T[lang].sub;
+    t.append(b, sp); box.append(t);
+    return;
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'copy';
+  wrap.style.setProperty('--headc', head);
+  const items = TEXTS()[current - 1], ys = LAYOUT[current - 1];
+  const top = (cm) => (cm / PH * 100) + '%';
+  let y = 3, yi = 0, last = current === PAGES ? PH - TEXTEND - 0.5 : PH - 3.1;
+  const bars = (a, b) => { if (b - a > 0.3) { const d = document.createElement('div'); d.className = 'bars'; d.style.top = top(a); d.style.height = ((b - a) / PH * 100) + '%'; wrap.append(d); } };
+  items.forEach((e) => {
+    if (e[0] === 't') { const p = document.createElement('p'); p.textContent = e[1]; p.style.top = top(y); wrap.append(p); y += 1.4; return; }
+    if (e[0] === 'big') { const h = document.createElement('h2'); h.className = 'big'; h.textContent = e[1]; h.style.top = top(y); wrap.append(h); y += 2.1; return; }
+    const at = ys[yi++ + (items[0][0] === 'big' ? 1 : 0)];
+    bars(y, at - 0.3);
+    const h = document.createElement(e[0] === 'h' ? 'h2' : 'h3');
+    h.textContent = e[1]; h.style.top = top(at); wrap.append(h);
+    y = at + 1;
+  });
+  bars(y, last);
+  box.append(wrap);
+  const n = document.createElement('div');
+  n.className = 'pageno' + (current === PAGES && S.mode !== 'paper' ? ' white' : '');
+  n.textContent = current;
+  box.append(n);
+}
+
+// ------------------------------------------------------------------ the story as a curve above its slider
+function level(P) {
+  if (S.story === 'flat') return S.level;
+  const th = S.threshold, hi = Math.max(th + 0.15, 0.95);
+  const under = th <= 0 ? 1 : Math.min(1, P / th);
+  const r = P <= th ? 0 : Math.pow(Math.min(1, (P - th) / (hi - th)), 0.85);
+  return 0.04 + 0.03 * under + 0.93 * r;
+}
+function drawCurve() {
+  const W = 280, H = 62, b = 12;
+  const y = (v) => (H - b) * (1 - v) + 2;
+  let d = 'M0 ' + (H - b);
+  let line = '';
+  for (let i = 0; i <= 70; i++) {
+    const P = i / 70;
+    d += ' L' + (P * W).toFixed(1) + ' ' + y(level(P)).toFixed(1);
+    line += (i ? ' L' : 'M') + (P * W).toFixed(1) + ' ' + y(level(P)).toFixed(1);
+  }
+  d += ' L' + W + ' ' + (H - b) + ' Z';
+  let ticks = '';
+  for (let p = 1; p <= PAGES; p++) {
+    const x = (p - 0.5) / PAGES * W;
+    ticks += '<text x="' + x + '" y="' + (H - 1) + '" text-anchor="middle"' + (p === current ? ' style="fill:var(--gold)"' : '') + '>' + p + '</text>';
+  }
+  const thx = S.threshold * W;
+  $('curve').innerHTML = '<defs><linearGradient id="sg" x1="0" x2="1" y1="0" y2="0">'
+    + ['#3a0bd0', '#0038ff', '#00e0ff', '#00ff33', '#b8ff00', '#ffdb00', '#ff5c00', '#ff0010'].map((c, i) => '<stop offset="' + (i / 7) + '" stop-color="' + c + '"/>').join('')
+    + '</linearGradient></defs><path d="' + d + '" fill="url(#sg)" opacity=".85"/><path d="' + line + '" fill="none" stroke="var(--text)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>'
+    + (S.story === 'flat' ? '' : '<line x1="' + thx + '" x2="' + thx + '" y1="0" y2="' + (H - b) + '" stroke="var(--gold)" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"/>') + ticks;
+}
+
+// ------------------------------------------------------------------ what to paste into a document
+function nondefault() {
+  const out = [];
+  const add = (k, v) => out.push([k, v]);
+  ['palette', 'mode', 'beam'].forEach((k) => { if (S[k] !== DEF[k]) add(k, S[k]); });
+  if (S.beam === 'mono' && S.wavelength) add('wavelength', S.wavelength);
+  if (S.story === 'flat') { add('story', 'flat'); add('level', S.level); } else if (S.threshold !== DEF.threshold) add('threshold', S.threshold);
+  ['caustic', 'caustics', 'density', 'seed'].forEach((k) => { if (S[k] !== DEF[k]) add(k, S[k]); });
+  return out;
+}
+function drawCode() {
+  const opts = nondefault();
+  $('c-latex').textContent = '\\usepackage' + (opts.length ? '[' + opts.map((e) => e.join('=')).join(',') + ']' : '') + '{limen}';
+  const flags = opts.map((e) => '--' + e[0] + ' ' + e[1]).join(' ');
+  $('c-typst').textContent = 'python3 typst/build.py report.typ' + (flags ? ' ' + flags : '');
+  const p = current === 0 ? '--cover spectrum' : '--page ' + current + ' --pages ' + PAGES + (current === PAGES ? ' --textend ' + TEXTEND : '');
+  $('c-cli').textContent = 'texlua limen-svg.lua ' + p + (flags ? ' ' + flags : '') + ' > page.svg';
+}
+
+// ------------------------------------------------------------------ controls
+function seg(id, values) {
+  const el = $(id);
+  el.innerHTML = '';
+  values.forEach((v) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.value = v; b.textContent = T[lang][v];
+    b.addEventListener('click', () => { S[id] = v; refresh(); });
+    el.append(b);
+  });
+}
+function markButtons() {
+  ['mode', 'beam', 'story'].forEach((id) => $(id).querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.value === S[id]))));
+  document.querySelectorAll('.chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.value === S.palette)));
+  document.querySelectorAll('.thumb').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.page === current)));
+  $('nmrow').hidden = S.beam !== 'mono';
+  const nm = S.wavelength || PALS[S.palette][3];
+  $('nm').value = Math.min(700, nm); $('nmv').textContent = nm + ' nm';
+  const flat = S.story === 'flat';
+  $('l-th').textContent = flat ? T[lang].level : T[lang].th;
+  $('th').max = flat ? 1 : 0.9;
+  $('th').value = flat ? S.level : S.threshold;
+  $('thv').textContent = (flat ? S.level : S.threshold).toFixed(2);
+  $('density').value = S.density; $('dv').textContent = S.density.toFixed(2);
+  $('seed').value = S.seed; $('caustic').value = S.caustic; $('count').value = S.caustics;
+}
+function texts() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  $('lead').textContent = t.lead;
+  $('lang').textContent = lang === 'ru' ? 'EN' : 'RU';
+  for (const k of ['palette', 'mode', 'beam', 'story', 'caustic', 'seed']) $('l-' + k).textContent = t[k];
+  $('l-nm').textContent = t.nm; $('l-density').textContent = t.density; $('reseed').textContent = t.reseed;
+  $('h-cli').textContent = t.cli; $('svgcopy').textContent = t.svgcopy; $('n-svg').textContent = t.svgnote; $('n-speed').textContent = t.speed;
+  document.querySelectorAll('[data-copy]').forEach((b) => { b.textContent = t.copy; });
+  seg('mode', ['night', 'paper']); seg('beam', ['spectrum', 'mono']); seg('story', ['threshold', 'flat']);
+  $('caustic').innerHTML = ['ellipse', 'cardioid', 'nephroid', 'rings', 'speckle', 'mix'].map((k) => '<option value="' + k + '">' + t[k] + '</option>').join('');
+  const zero = document.querySelector('.thumb[data-page="0"] span');
+  if (zero) zero.textContent = t.cover;
+}
+function build() {
+  const chips = $('palettes');
+  Object.keys(PALS).forEach((name) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.dataset.value = name;
+    b.style.setProperty('--chipbg', PALS[name][0]); b.style.setProperty('--chipline', PALS[name][1]);
+    b.innerHTML = name + '<i></i>';
+    b.addEventListener('click', () => { S.palette = name; S.wavelength = 0; refresh(); });
+    chips.append(b);
+  });
+  const strip = $('strip');
+  for (let p = 0; p <= PAGES; p++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'thumb'; b.dataset.page = p;
+    b.innerHTML = '<img alt=""><span>' + (p || '') + '</span>';
+    b.addEventListener('click', () => { current = p; refresh(); });
+    strip.append(b);
+  }
+  $('th').addEventListener('input', (e) => { if (S.story === 'flat') S.level = +e.target.value; else S.threshold = +e.target.value; markButtons(); drawCurve(); refresh(); });
+  $('nm').addEventListener('input', (e) => { S.wavelength = +e.target.value; refresh(); });
+  $('density').addEventListener('input', (e) => { S.density = +e.target.value; refresh(); });
+  $('caustic').addEventListener('change', (e) => { S.caustic = e.target.value; refresh(); });
+  $('count').addEventListener('change', (e) => { S.caustics = +e.target.value; refresh(); });
+  $('seed').addEventListener('change', (e) => { S.seed = Math.max(1, Math.floor(+e.target.value) || 1); refresh(); });
+  $('reseed').addEventListener('click', () => { S.seed = 1 + Math.floor(Math.random() * 99999); refresh(); });
+  $('lang').addEventListener('click', () => { lang = lang === 'ru' ? 'en' : 'ru'; texts(); refresh(); });
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => copyText($(b.dataset.copy).textContent, b, $(b.dataset.copy))));
+  $('svgcopy').addEventListener('click', () => {
+    $('status').textContent = T[lang].svgwork;
+    request(current, 'full', (it) => { copyText(it.svg, $('svgcopy')); $('status').textContent = T[lang].svgready; }, true);
+    pump();
+  });
+}
+function copyText(text, button, el) {
+  const orig = button.textContent;
+  const fine = () => { button.textContent = T[lang].copied; setTimeout(() => { button.textContent = orig; }, 1400); };
+  const failed = () => {
+    if (el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    $('status').textContent = T[lang].copyfail;
+  };
+  try { navigator.clipboard.writeText(text).then(fine, failed); } catch (e) { failed(); }
+}
+function start() {
+  if (location.hash) decode(location.hash);
+  build(); texts(); markButtons(); drawCopy(); drawCurve(); drawCode();
+  try {
+    // Fengari goes inside the worker's own source: a page opened from a folder cannot load a second script into it
+    worker = new Worker(URL.createObjectURL(new Blob(['self.window = self;\n', $('src-fengari').textContent, '\n', WORKER], { type: 'text/javascript' })));
+    worker.onmessage = onResult;
+    worker.onerror = (e) => setStatus(null, null, T[lang].fail + ': ' + e.message);
+    const lua = {};
+    for (const m of ['limen-pdf', 'limen-art', 'limen-palettes', 'limen-svg']) lua[m] = $('src-' + m).textContent;
+    worker.postMessage({ boot: { lua } });
+  } catch (e) { setStatus(null, null, T[lang].fail); }
+}
+start();
+</script>

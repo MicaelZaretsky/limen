@@ -1,0 +1,12 @@
+% Several thresholds: the story climbs in steps.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=ruby]{limen}
+\begin{document}
+\section{Start}\lipsum[1-7]
+\section{First step}\limenthreshold\lipsum[8-16]
+\section{Plateau}\lipsum[17-22]
+\section{Second step}\limenthreshold\lipsum[23-31]
+\section{Third step}\limenthreshold\lipsum[32-40]
+\end{document}

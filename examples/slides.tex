@@ -1,0 +1,34 @@
+% Slides. Overlays of one frame keep the same picture. Run lualatex twice.
+\documentclass[aspectratio=169]{beamer}
+\usepackage{limen}
+\begin{document}
+\begin{frame}[plain]
+  \limencover{How light earns its colour}{A short talk}{Seminar, November 2026}
+\end{frame}
+\begin{frame}{Below the threshold}
+  \begin{itemize}
+    \item<1-> The beam is thin and almost white
+    \item<2-> The field is dark and the lines are only beginning to show
+    \item<3-> Overlays of one frame keep the same picture
+  \end{itemize}
+\end{frame}
+\begin{frame}{The curve}
+  Output stays low until the threshold, then rises almost in a straight line.
+\end{frame}
+\begin{frame}{The threshold}
+  \limenthreshold
+  You can put the threshold on the frame where your argument turns.
+\end{frame}
+\begin{frame}{Above it}
+  \begin{enumerate}
+    \item The spindles grow wider
+    \item The field gains colour
+  \end{enumerate}
+\end{frame}
+\begin{frame}{Almost there}
+  A strip of spectrum: \limenspectrum[4cm]
+\end{frame}
+\begin{frame}{The end}
+  The last frame closes with a small fan that leaves through the edge of the sheet.
+\end{frame}
+\end{document}

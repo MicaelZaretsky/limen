@@ -1,0 +1,11 @@
+% For a print shop: CMYK and 3 mm of bleed, with a cover and a closing page.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[hidelinks]{hyperref}
+\usepackage[color=cmyk,bleed=3]{limen}
+\begin{document}
+\limencover{A cover with bleed}{CMYK}{Details}
+\section{Text}\lipsum[1-6]
+\section{More}\lipsum[7-9]
+\end{document}

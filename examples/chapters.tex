@@ -1,0 +1,15 @@
+% story=chapter: the beam starts again in every chapter. Run lualatex twice.
+\documentclass[11pt,a4paper]{report}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[palette=infrared,story=chapter]{limen}
+\begin{document}
+\chapter{The first chapter}
+\lipsum[1-8]
+\section{A section}
+\lipsum[9-16]
+\chapter{The second chapter}
+\lipsum[17-22]
+\section{Another section}
+\lipsum[23-30]
+\end{document}

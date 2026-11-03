@@ -1,0 +1,70 @@
+% limen-guide-common.tex -- the layout shared by the guides. The guides load fontspec and their language first.
+\setmainfont{Lora}[Path=../doc/fonts/,Extension=.ttf,UprightFont=*-Regular,BoldFont=*-Bold,
+  ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic,Ligatures=TeX]
+\setsansfont{Inter}[Path=../doc/fonts/,Extension=.otf,UprightFont=*-Regular,BoldFont=*-SemiBold,
+  ItalicFont=*-Italic,BoldItalicFont=*-Bold,Scale=0.9]
+\linespread{1.1}
+\usepackage{microtype}
+\usepackage{fancyhdr,booktabs,tabularx,array,enumitem,caption,graphicx,fancyvrb,tikz}
+\usepackage[hidelinks]{hyperref}
+\usepackage[palette=ultramarine]{limen}
+\limensetup{initialfont=fonts/Lora-Bold.ttf}
+\graphicspath{{../gallery/}{gallery/}}
+\definecolor{textc}{HTML}{1E1D22}
+\definecolor{muted}{HTML}{5C5A63}
+\definecolor{rulec}{HTML}{D6D3DE}
+% chart colours, checked for separation under colour blindness and for contrast on the page
+\definecolor{chartA}{HTML}{3D57C7}
+\definecolor{chartB}{HTML}{B47A12}
+\color{textc}
+\hypersetup{colorlinks=true,linkcolor=limenink,urlcolor=limenink}
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.8ex plus -.6ex minus -.2ex}{1.2ex plus .2ex}%
+  {\normalfont\large\bfseries\color{limenink}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-2ex plus -.4ex minus -.2ex}{.7ex plus .1ex}%
+  {\normalfont\normalsize\bfseries\color{limenink}}}
+\renewcommand\l@section{\@dottedtocline{1}{0pt}{1.6em}}
+\renewcommand\numberline[1]{\hb@xt@\@tempdima{#1\hfil}}
+\makeatother
+\setcounter{secnumdepth}{1}
+\setcounter{tocdepth}{1}
+\pagestyle{fancy}\fancyhf{}\renewcommand\headrulewidth{0pt}
+\fancyfoot[R]{\footnotesize\sffamily\color{muted}\thepage}
+\setlist{leftmargin=1.2em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlist[itemize]{label={\color{limenaccent}\textbullet}}
+\captionsetup{font={footnotesize,sf},labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=false,skip=5pt}
+\setlength\parindent{0pt}\setlength\parskip{.55em plus .1em}
+\emergencystretch=3em
+\providecommand\curvesep{.}
+% commands and options in the text
+\newcommand\cs[1]{\texttt{\textbackslash #1}}
+\newcommand\opt[1]{\texttt{#1}}
+% tables
+\newcolumntype{L}{>{\raggedright\arraybackslash\sffamily\footnotesize}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash\sffamily\footnotesize}p{#1}}
+\newcolumntype{T}[1]{>{\raggedright\arraybackslash\ttfamily\footnotesize}p{#1}}
+\newcommand\thead[1]{\textbf{\sffamily\footnotesize #1}}
+\newcommand\fig[3][1]{\par\medskip\noindent\begin{minipage}{\linewidth}\includegraphics[width=#1\linewidth]{#2}\captionof{figure}{#3}\end{minipage}\par\medskip}
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small,formatcom=\color{limenink},xleftmargin=.6em,samepage=true}
+% the curve of the story, computed by the package itself; #1 lists thresholds as shares of the document
+\newcommand\curvepts[1]{\directlua{
+  local Art = require("limen-art")
+  local ths = {}
+  for v in string.gmatch("#1", "[0-9.]+") do table.insert(ths, { i = tonumber(v) * 100 + 1, y = 1 }) end
+  local S = Art.make_story(1, 1, Art.defaults(), { pages = 100, ths = ths })
+  local t = {}
+  for k = 0, 200 do table.insert(t, "(" .. k / 200 .. "," .. S.curve(k / 200, 0.04, 0.07) .. ")") end
+  tex.sprint(table.concat(t, " -- "))}}
+% #1 x label, #2 y label, #3 legend of one threshold, #4 legend of three, #5 caption
+\newcommand\curvefig[5]{\par\medskip\noindent\begin{minipage}{\linewidth}\centering
+  \begin{tikzpicture}[x=.88\linewidth,y=34mm,font=\sffamily\footnotesize]
+    \foreach \v/\t in {0/0,.5/0\curvesep 5,1/1} {\draw[rulec,line width=.3pt] (0,\v) -- (1,\v); \node[anchor=east,text=muted] at (0,\v) {\t};}
+    \foreach \v/\t in {0/0,.25/0\curvesep 25,.5/0\curvesep 5,.75/0\curvesep 75,1/1} {\draw[rulec,line width=.3pt] (\v,0) -- (\v,-.03); \node[anchor=north,text=muted] at (\v,-.03) {\t};}
+    \edef\limentmp{\noexpand\draw[chartB,line width=1.3pt,line join=round] \curvepts{0.18,0.5,0.75};}\limentmp
+    \edef\limentmp{\noexpand\draw[chartA,line width=1.3pt,line join=round] \curvepts{0.25};}\limentmp
+    \node[anchor=north,text=muted] at (.5,-.14) {#1};
+    \node[anchor=south,rotate=90,text=muted] at (-.07,.5) {#2};
+    \draw[chartA,line width=1.3pt] (0,1.13) -- (.05,1.13); \node[anchor=west] at (.05,1.13) {#3};
+    \draw[chartB,line width=1.3pt] (.42,1.13) -- (.47,1.13); \node[anchor=west] at (.47,1.13) {#4};
+  \end{tikzpicture}
+  \captionof{figure}{#5}\end{minipage}\par\medskip}

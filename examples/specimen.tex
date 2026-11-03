@@ -1,0 +1,21 @@
+% Used by tools/gallery.py: one document, any palette or mode.
+%   lualatex "\def\specimenopts{palette=peacock}\input{specimen}"
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\providecommand\specimenopts{}
+\usepackage[\specimenopts]{limen}
+\begin{document}
+\noindent{\LARGE\bfseries\color{limenink}How light earns its colour\par}
+\bigskip
+\limeninitial{T}his page is the beginning of the story: a thin white beam on a dark field. \lipsum[1]
+\section{Below the threshold}\lipsum[2-6]
+\subsection{What the margin shows}\lipsum[7-10]
+\section{The threshold}\lipsum[11-14]
+\subsection{Past it}\lipsum[15-19]
+\section{Above it}\lipsum[20-26]
+\subsection{The spindles widen}\lipsum[27-33]
+\section{Almost the full spectrum}\lipsum[34-41]
+\subsection{The field has its colour}\lipsum[42-46]
+\section{The end}\lipsum[47]
+\end{document}

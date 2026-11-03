@@ -1,0 +1,200 @@
+%% limen.sty -- page margins where light has to earn its colour, drawn by Lua
+%% Limen (Latin): threshold. MIT License, see LICENSE.
+%%
+%% LuaLaTeX only. Everything is computed in Lua while the page is shipped out and written straight
+%% into the PDF: no images, no external files. Run LuaLaTeX twice, as for a table of contents.
+%%
+%%   \usepackage[palette=ultramarine]{limen}
+%%
+%% Options (also through \limensetup{...}, in the preamble)
+%%   palette=ultramarine|peacock|ruby|emerald|infrared|graphite, or your own \limendefinepalette
+%%   mode=night|paper          dark field for the screen, light one for an office printer
+%%   story=threshold|flat|chapter   grow once, stay at a fixed stage, or grow again in every chapter
+%%   threshold=0.25            where the beam crosses the threshold, as a share of the document
+%%   beam=spectrum|mono  wavelength=<nm>   a rainbow, or one colour as a real laser
+%%   caustic=ellipse|cardioid|nephroid|rings|speckle|mix
+%%   color=rgb|cmyk  bleed=<mm>   for a print shop: DeviceCMYK, TrimBox and BleedBox
+%%   level=0.75                the stage of story=flat
+%%   density=1  caustics=2  lines=true  headings=true  finale=true  headrule=true
+%%   column=<cm>               width of the coloured column; by default it reaches the text
+%%   seed=1  paper=FFFFFF  initialfont=auto|<file>  draft
+%%
+%% Commands in the text
+%%   \limenthreshold (several make steps)  \limenstar  \limencaustic[kind=rings,size=1.3]
+%%   \limenrestart  \limenlevel{0..1}
+%%   \limenpause  \limenoff  \limenon  \limenend
+%%   \limeninitial[lines]{L}  \limenrule[width]  \limenspark[size]  \limenspectrum[width]
+%%   \limencover[style=spectrum|dark]{title}{subtitle}{details}
+%%
+%% doc/limen-guide.pdf says when to use all this and when not to.
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]
+\ProvidesPackage{limen}[2026/11/03 v0.2 threshold-lit page margins, Lua-drawn]
+\ifdefined\directlua\else
+  \PackageError{limen}{limen needs LuaLaTeX}{Compile with lualatex.}\fi
+\RequirePackage{xcolor}
+
+\def\limen@opts{}
+\DeclareOption*{\edef\limen@opts{\limen@opts,\CurrentOption}}
+\ProcessOptions\relax
+
+\directlua{limen = require("limen")}
+\directlua{limen.setup("\luaescapestring{\limen@opts}")}
+\newcommand\limensetup[1]{\directlua{limen.setup("\luaescapestring{\detokenize{#1}}")}\directlua{limen.colors()}}
+\newcommand\limendefinepalette[2]{\directlua{limen.define_palette("\luaescapestring{#1}", "\luaescapestring{\detokenize{#2}}")}}
+\directlua{limen.colors()}
+
+%% ---------------------------------------------------------------- the story needs the last run
+\newcommand\limen@aux[2]{\directlua{limen.aux_in("#1", "#2")}}
+\AtBeginDocument{\if@filesw\immediate\write\@mainaux{\string\providecommand\string\limen@aux[2]{}}\fi}
+\AddToHook{enddocument/afterlastpage}{\directlua{limen.aux_out()}}
+
+%% ---------------------------------------------------------------- marks
+\newcommand\limen@mark[2]{\directlua{limen.mark("#1", "\luaescapestring{\detokenize{#2}}")}}
+\newcommand\limenstar{\limen@mark{star}{}}
+\newcommand\limenthreshold{\limen@mark{threshold}{}}
+\newcommand\limencaustic[1][size=1.3]{\limen@mark{caustic}{#1}}
+\newcommand\limenrestart{\limen@mark{restart}{}}
+\newcommand\limenlevel[1]{\limen@mark{level}{#1}}
+\newcommand\limenpause{\limen@mark{pause}{}}
+\newcommand\limenoff{\limen@mark{off}{}}
+\newcommand\limenon{\limen@mark{on}{}}
+
+%% Headings get their stars from inside the heading text. Standard classes build every heading with \@sect;
+%% KOMA-Script has gone its own way since version 3.4x and offers \sectionlinesformat for this purpose.
+\protected\def\limen@headmark#1{\ifnum\numexpr#1\relax<3 \directlua{limen.mark("heading", \number\numexpr#1\relax)}\fi}
+\protected\def\limen@headname#1{\ifcsname limen@level@#1\endcsname\limen@headmark{\csname limen@level@#1\endcsname}\fi}
+\def\limen@level@chapter{0}\def\limen@level@section{1}\def\limen@level@subsection{2}
+\protected\def\limen@aftermark#1{\ifvmode
+    %% under the last glue, so the next heading still merges its space with it; the penalty keeps the heading with its text
+    \skip@=\lastskip\unskip\limen@headmark{#1}\nobreak\vskip\skip@
+  \fi}
+\AddToHook{begindocument/end}{%
+  \ifdefined\ParseLaTeXeHeading
+    %% tagged documents build headings in new code, with hooks around the commands
+    \AddToHook{cmd/section/after}{\limen@aftermark{1}}%
+    \AddToHook{cmd/subsection/after}{\limen@aftermark{2}}%
+    \ifdefined\chapter\AddToHook{cmd/chapter/after}{\limen@aftermark{0}}\fi
+  \else\ifdefined\KOMAClassName
+    \ifdefined\sectionlinesformat
+      \let\limen@slf\sectionlinesformat
+      \def\sectionlinesformat#1#2#3#4{\limen@slf{#1}{#2}{#3}{\limen@headname{#1}#4}}%
+    \fi
+    \ifdefined\chapterlinesformat
+      \let\limen@clf\chapterlinesformat
+      \def\chapterlinesformat#1#2#3{\limen@clf{#1}{#2}{\limen@headname{#1}#3}}%
+    \fi
+    \ifdefined\chapterlineswithprefixformat
+      \let\limen@cpf\chapterlineswithprefixformat
+      \def\chapterlineswithprefixformat#1#2#3{\limen@cpf{#1}{#2}{\limen@headname{#1}#3}}%
+    \fi
+  \else
+    \ifdefined\M@sect
+      %% memoir sends every numbered heading through this one
+      \let\limen@msect\M@sect
+      \def\M@sect#1#2#3#4#5#6[#7][#8]#9{\limen@msect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}][{#8}]{\limen@headmark{#2}#9}}%
+    \else\ifdefined\@sect
+      \let\limen@sect\@sect
+      \def\@sect#1#2#3#4#5#6[#7]#8{\limen@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}]{\limen@headmark{#2}#8}}%
+    \fi\fi
+    \ifdefined\@ssect
+      \let\limen@ssect\@ssect
+      \def\@ssect#1#2#3#4#5{\limen@ssect{#1}{#2}{#3}{#4}{\limen@headmark{1}#5}}%
+    \fi
+    \ifdefined\@makechapterhead
+      \let\limen@mch\@makechapterhead
+      \def\@makechapterhead#1{\limen@mch{\limen@headmark{0}#1}}%
+    \fi
+    \ifdefined\@makeschapterhead
+      \let\limen@msch\@makeschapterhead
+      \def\@makeschapterhead#1{\limen@msch{\limen@headmark{0}#1}}%
+    \fi
+  \fi\fi}
+
+%% By default the story closes on the last page. Put \limenend where it should close earlier, before appendices
+%% or a bibliography that should stay out of it.
+\newcommand\limenend{\par\limen@mark{end}{}}
+
+%% ---------------------------------------------------------------- the page
+\newif\iflimen@beamer
+\@ifclassloaded{beamer}{\limen@beamertrue}{}
+\newdimen\limen@bleed
+\AddToHook{shipout/background}{%
+  \directlua{limen.twoside = \if@twoside true\else false\fi}%
+  \put(0,-\dimexpr\paperheight+2\limen@bleed\relax){\directlua{limen.page(\number\ShipoutBox, \number\value{page}%
+    \iflimen@beamer, \number\value{framenumber}\fi)}}}
+%% with \DocumentMetadata the page attributes go through LaTeX's PDF management
+\AddToHook{begindocument/end}{%
+  \ifdefined\IfPDFManagementActiveTF
+    \IfPDFManagementActiveTF{\directlua{limen.managed_attributes()}}{}%
+  \fi}
+%% bleed: the sheet grows on every side and everything on it moves by the same amount
+\AddToHook{begindocument/end}{%
+  \iflimen@beamer\else
+    \global\limen@bleed=\directlua{tex.sprint(limen.opt.bleed)}mm\relax
+    \ifdim\limen@bleed>\z@
+      \global\pagewidth=\dimexpr\paperwidth+2\limen@bleed\relax
+      \global\pageheight=\dimexpr\paperheight+2\limen@bleed\relax
+      \global\advance\hoffset\limen@bleed
+      \global\advance\voffset\limen@bleed
+    \fi
+  \fi}
+
+%% ---------------------------------------------------------------- initials
+%% a square tile from the cap height of the first line to the baseline of line #1; the letter is also
+%% typeset invisibly, so the paragraph still copies and searches as a whole word
+\newdimen\limen@side \newdimen\limen@cap
+\newcommand\limeninitial[2][3]{\par
+  \limen@cap=\fontcharht\font`\H
+  \begingroup\bfseries\directlua{limen.note_font()}\endgroup
+  \limen@side=\dimexpr\baselineskip*\numexpr#1-1\relax+\limen@cap\relax
+  \hangindent=\dimexpr\limen@side+0.6em\relax \hangafter=-#1\relax
+  \noindent
+  \llap{\smash{\raisebox{\dimexpr\limen@cap-\limen@side\relax}{\directlua{limen.initial("\luaescapestring{#2}", \number\limen@side)}}}\hspace{0.6em}}%
+  \llap{\directlua{limen.hidden(true)}#2\directlua{limen.hidden(false)}}%
+  \ignorespaces}
+
+%% ---------------------------------------------------------------- ornaments in the text
+\newdimen\limen@w \newdimen\limen@h
+\newcommand\limenrule[1][0.5\linewidth]{\par\medskip\noindent
+  \limen@w=#1\relax \limen@h=0.7em\relax
+  \hbox to\linewidth{\hss\hbox to\limen@w{\directlua{limen.rule(\number\limen@w, \number\limen@h)}\hss}\hss}\par\medskip}
+\newcommand\limenspark[1][0.8em]{\leavevmode\limen@w=#1\relax
+  \raisebox{-0.1\limen@w}{\directlua{limen.spark(\number\limen@w)}}}
+\newcommand\limenspectrum[1][4cm]{\leavevmode\limen@w=#1\relax \limen@h=0.6em\relax
+  \directlua{limen.spectrum(\number\limen@w, \number\limen@h, 400, 700)}}
+
+%% ---------------------------------------------------------------- the cover
+\newcommand\limen@coverfont[2]{\fontsize{\the\dimexpr#1\paperwidth\relax}{\the\dimexpr#2\paperwidth\relax}\selectfont}
+\newcommand\limencover[4][]{%
+  \iflimen@beamer\else\clearpage\thispagestyle{empty}\fi
+  \xdef\limen@covercolor{\directlua{tex.sprint(limen.opt.mode == "paper" and "limenink" or "white")}}%
+  \AddToHookNext{shipout/foreground}{%
+    \put(\dimexpr0.08\paperwidth+\limen@bleed\relax,-\dimexpr0.07\paperheight+\limen@bleed\relax){%
+      \parbox[t]{0.84\paperwidth}{\raggedright\color{\limen@covercolor}%
+        {\limen@coverfont{0.05}{0.06}\bfseries #2\par}%
+        \vspace{0.014\paperheight}%
+        {\limen@coverfont{0.023}{0.031}#3\par}}}%
+    \put(\dimexpr0.08\paperwidth+\limen@bleed\relax,-\dimexpr0.94\paperheight+\limen@bleed\relax){%
+      \parbox[b]{0.84\paperwidth}{\raggedright\color{\limen@covercolor}\limen@coverfont{0.018}{0.025}#4}}}%
+  \limen@mark{cover}{#1}%
+  \iflimen@beamer\else\null\clearpage\fi}
+
+%% ---------------------------------------------------------------- slides
+\iflimen@beamer
+  \directlua{limen.beamer = true; limen.opt.headrule = false}
+  \edef\limen@textleft{\directlua{tex.sprint((limen.opt.column or 2.2) + 0.5)}cm}
+  \setbeamertemplate{background canvas}{}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamersize{text margin left=\limen@textleft, text margin right=0.8cm}
+  \setbeamercolor{frametitle}{fg=limenink,bg=}
+  \setbeamertemplate{frametitle}{\vspace{0.35cm}\hspace*{\limen@textleft}%
+    \parbox{\dimexpr\paperwidth-\limen@textleft-0.8cm\relax}{\raggedright\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle
+      \ifx\insertframesubtitle\@empty\else\par\usebeamerfont{framesubtitle}\insertframesubtitle\fi}}
+  \setbeamercolor{title}{fg=limenink,bg=}
+  \setbeamercolor{structure}{fg=limenink}
+  \setbeamercolor{itemize item}{fg=limenaccent}
+  \setbeamercolor{itemize subitem}{fg=limenaccent}
+  \setbeamercolor{enumerate item}{fg=limenaccent}
+  \setbeamertemplate{footline}{\hfill\usebeamerfont{page number in head/foot}\color{limenink}\insertframenumber\hspace{0.8cm}\vspace{0.3cm}}
+\fi
+\endinput

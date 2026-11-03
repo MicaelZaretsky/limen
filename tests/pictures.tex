@@ -1,0 +1,12 @@
+% A picture without glyphs at the end of the text must count as content.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage[palette=emerald]{limen}
+\begin{document}
+\section{Section one}\lipsum[1-7]
+\clearpage
+\section{Short}Text.\par
+\begin{center}\begin{tikzpicture}\fill[blue!30] (0,0) rectangle (9,5);\end{tikzpicture}\end{center}
+\end{document}

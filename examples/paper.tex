@@ -1,0 +1,21 @@
+% mode=paper: a light field for an office printer. Run lualatex twice.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage[mode=paper]{limen}
+\begin{document}
+\limeninitial{T}his document uses almost no ink: thin lines on white paper, a dark thin beam, and the spectrum
+only where the story has earned it. \lipsum[1]
+\section{Below the threshold}
+\lipsum[2-5]
+\section{The threshold}
+\limenthreshold
+\lipsum[6-9]
+\limenrule
+\section{Above it}
+\lipsum[10-16]
+\subsection{Almost there}
+\lipsum[17-22]
+\section{The end}
+\lipsum[23]
+\end{document}

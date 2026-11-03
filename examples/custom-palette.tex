@@ -1,0 +1,14 @@
+% Your own palette, US Letter, an earlier threshold. Run lualatex twice.
+\documentclass[10pt,letterpaper]{article}
+\usepackage[letterpaper,left=2.3in,right=0.7in,top=1.2in,bottom=1.1in]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\limendefinepalette{dusk}{deep=1B1033, flow=5A2A7A, flow2=A83E6A, line=FFD9A0, ink=5A2A7A, accent=C9773A}
+\limensetup{palette=dusk, threshold=0.1, caustics=1}
+\begin{document}
+\section{Dusk}
+\lipsum[1-8]
+\section{Night}
+\limencaustic[1.5]
+\lipsum[9-16]
+\end{document}

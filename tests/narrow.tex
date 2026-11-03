@@ -1,0 +1,9 @@
+% A narrow margin: limen should warn and still draw something sane.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=15mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\section{Section one}\lipsum[1-6]
+\section{Section two}\lipsum[7-12]
+\end{document}

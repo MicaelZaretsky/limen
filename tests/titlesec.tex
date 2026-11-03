@@ -1,0 +1,11 @@
+% titlesec replaces the heading code: automatic stars cannot work, \limenstar does.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\color{limenink}}{\thesection}{1em}{\limenstar}
+\usepackage{limen}
+\begin{document}
+\section{Section one}\lipsum[1-5]
+\section{Section two}\lipsum[6-14]
+\end{document}

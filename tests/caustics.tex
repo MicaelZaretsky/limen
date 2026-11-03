@@ -1,0 +1,15 @@
+% Every kind of caustic by name, each in the margin beside its own line.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\limenlevel{0.8}
+\section{Ellipse}\limencaustic[kind=ellipse,size=1.4]\lipsum[1]
+\section{Cardioid}\limencaustic[kind=cardioid,size=1.4]\lipsum[1]
+\section{Nephroid}\limencaustic[kind=nephroid,size=1.4]\lipsum[1]
+\section{Rings}\limencaustic[kind=rings,size=1.4]\lipsum[1]
+\section{Speckle}\limencaustic[kind=speckle,size=1.4]\lipsum[1]
+\clearpage
+\section{Plain number}\limencaustic[1.2]\lipsum[11]
+\end{document}

@@ -1,0 +1,11 @@
+% The last page has a float at the top and short text: the lake starts below all of it.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\section{Section one}\lipsum[1-7]
+\clearpage
+\begin{figure}[t]\centering\rule{9cm}{4cm}\caption{A top float}\end{figure}
+\section{Short}Two lines of text under a float.
+\end{document}

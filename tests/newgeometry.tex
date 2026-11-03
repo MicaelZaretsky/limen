@@ -1,0 +1,14 @@
+% A wide table in the middle of the document: the art follows the layout of each page.
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\begin{document}
+\section{Before}\lipsum[1-6]
+\clearpage
+\newgeometry{left=32mm,right=12mm,top=30mm,bottom=29mm}
+\section{A wider page}\lipsum[7-10]
+\clearpage
+\restoregeometry
+\section{After}\lipsum[11-16]
+\end{document}

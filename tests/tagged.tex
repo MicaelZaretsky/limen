@@ -1,0 +1,13 @@
+% A tagged PDF: the art must be marked as an artifact and the structure must survive.
+\DocumentMetadata{lang=en,tagging=on}
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=58mm,right=17mm,top=30mm,bottom=29mm]{geometry}
+\usepackage{lipsum}
+\usepackage{limen}
+\title{Tagged}
+\begin{document}
+\limeninitial{T}his document is tagged. \lipsum[1]
+\section{Section}\lipsum[2-4]
+\limenrule
+\section{Another}Text with \limenspark{} a spark.
+\end{document}

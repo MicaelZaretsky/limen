@@ -1,0 +1,72 @@
+% print-test.tex -- one A4 sheet that answers what a printer does to limen. Make it with: make print-test
+% Everything stays 10 mm from the edge, so that an office printer can print the whole of it. Print at 100 %.
+\documentclass{article}
+\usepackage[a4paper,margin=10mm,noheadfoot]{geometry}
+\usepackage{fontspec}
+\setsansfont{Inter}[Path=../doc/fonts/,Extension=.otf,UprightFont=*-Regular,BoldFont=*-SemiBold,ItalicFont=*-Italic,BoldItalicFont=*-Bold]
+\setmainfont{Lora}[Path=../doc/fonts/,Extension=.ttf,UprightFont=*-Regular,BoldFont=*-Bold,ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic]
+\usepackage{tikz}
+\directlua{T = require("print-test")}
+\pagestyle{empty}
+\setlength\parindent{0pt}\setlength\parskip{0pt}
+\definecolor{muted}{HTML}{5C5A63}
+\newcommand\head[2]{\par\vspace{2.2mm}{\sffamily\fontsize{8}{10}\selectfont\textbf{#1.} #2}\par\vspace{1mm}}
+% a piece of a whole page of art at its real size: x, y of the lower left corner in cm on the page, width, height in mm, Lua spec
+\newcommand\crop[5]{\begin{tikzpicture}[baseline=(current bounding box.south)]
+  \clip (0,0) rectangle (#3mm,#4mm);
+  \node[inner sep=0,outer sep=0,anchor=south west] at (-#1cm,-#2cm) {\directlua{T.art(#5)}};
+\end{tikzpicture}}
+\newcommand\sub[1]{{\sffamily\fontsize{6.5}{8}\selectfont\color{muted}#1}}
+\begin{document}\sffamily
+{\fontsize{12}{14}\selectfont\textbf{limen: лист проверки печати}}\hfill{\fontsize{7.5}{9}\selectfont Печатать в масштабе 100~\%. Принтер: \rule{30mm}{.3pt}\ Бумага: \rule{30mm}{.3pt}}\par
+
+\head{1}{Стадии луча, настоящий размер. Виден ли тонкий белый луч? Не слились ли золотые линии?}
+\newcommand\heads{marks={{kind="heading",y=18.3,arg=1},{kind="heading",y=11.4,arg=2}}}
+\begin{tabular}{@{}c@{\hspace{3.3mm}}c@{\hspace{3.3mm}}c@{\hspace{3.3mm}}c@{}}
+\crop{.6}{9.2}{45}{88}{{level=0.03,\heads,o={caustics=1}}}&
+\crop{.6}{9.2}{45}{88}{{level=0.5,\heads,o={caustics=1}}}&
+\crop{.6}{9.2}{45}{88}{{level=1,\heads,o={caustics=1}}}&
+\crop{.6}{9.2}{45}{88}{{level=0.6,\heads,o={mode="paper",caustics=1}}}\\[.3mm]
+\sub{ниже порога}&\sub{середина}&\sub{полный спектр}&\sub{\texttt{mode=paper}, для офисного принтера}
+\end{tabular}
+
+\head{2}{Радуга, две версии одного веера. Что ярче? Куда делись зелёный и фиолетовый?}
+\begin{tabular}{@{}c@{\hspace{4mm}}c@{}}
+\crop{8}{8.6}{93}{28}{{level=1,lake=16,o={lines=false}}}&
+\crop{8}{8.6}{93}{28}{{level=1,lake=16,o={lines=false,color="cmyk"}}}\\[.3mm]
+\sub{RGB: цвет пересчитывает принтер или типография}&\sub{CMYK: простая формула пакета, \texttt{color=cmyk}}
+\end{tabular}
+
+\head{3}{Тёмное поле шести палитр. Ровная ли заливка, нет ли полос, не коробится ли бумага?}
+\begin{tabular}{@{}c@{\hspace{2mm}}c@{\hspace{2mm}}c@{\hspace{2mm}}c@{\hspace{2mm}}c@{\hspace{2mm}}c@{}}
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="ultramarine",caustics=0}}}&
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="peacock",caustics=0}}}&
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="ruby",caustics=0}}}&
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="emerald",caustics=0}}}&
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="infrared",caustics=0}}}&
+\crop{.1}{13}{30}{15}{{level=0.35,o={palette="graphite",caustics=0}}}\\[.3mm]
+\sub{ultramarine}&\sub{peacock}&\sub{ruby}&\sub{emerald}&\sub{infrared}&\sub{graphite}
+\end{tabular}
+
+\head{4}{Самые тонкие линии. Строка сверху вниз: 0,2 0,3 0,38 0,5 0,75 1 пт. Столбец слева направо: плотность 30, 50, 70, 88, 100~\%. Сейчас поля рисуются линией 0,38~пт.}
+\begin{tabular}{@{}c@{\hspace{3mm}}c@{\hspace{3mm}}c@{}}
+\relax\directlua{T.lines(7.2,2.8,true)}&\directlua{T.lines(7.2,2.8,false)}&\directlua{T.white(3.8,2.8)}\\[.3mm]
+\sub{золото на тёмном}&\sub{тёмная краска на бумаге, как в \texttt{mode=paper}}&\sub{белое на тёмном: 0,2\ldots1 пт}
+\end{tabular}
+
+\head{5}{Плавные переходы. Видны ли ступени, полосы или грязная сетка растра?}
+\directlua{T.ramp(19,.42,{"0A1458","FFFFFF"})}\par\vspace{.6mm}
+\directlua{T.spectrum(19,.42)}\par\vspace{.6mm}
+\directlua{T.ramp(19,.42,{"000000","FFFFFF"})}\par
+
+\head{6}{Край поля и текст рядом с ним, как на обычной странице. Читается ли мелкий текст?}
+\begin{tikzpicture}[baseline=(current bounding box.south)]
+  \clip (0,0) rectangle (190mm,22mm);
+  \node[inner sep=0,outer sep=0,anchor=south west] at (-1cm,-13cm) {\directlua{T.art({level=0.7,o={caustics=0}})}};
+  \node[anchor=north west,inner sep=0,text width=136mm] at (48mm,20.5mm) {\rmfamily
+    {\fontsize{7}{9}\selectfont Кегль 7. Порог наступает тогда, когда усиление за обход резонатора сравнивается с потерями за обход.\par}\vspace{1mm}
+    {\fontsize{8.5}{11}\selectfont Кегль 8,5. Порог наступает тогда, когда усиление за обход сравнивается с потерями.\par}\vspace{1mm}
+    {\fontsize{10}{13}\selectfont Кегль 10. Порог наступает, когда усиление сравнивается с потерями.\par}};
+\end{tikzpicture}\par\vspace{2.2mm}
+{\fontsize{7}{9}\selectfont\color{muted}Отрезок \textcolor{black}{\rule[.5ex]{50mm}{.4pt}} на бумаге должен быть ровно 50~мм, иначе лист сжат. Если вокруг линий блока~4 видны прямоугольники, в Acrobat включите: Печать $\to$ Дополнительно $\to$ Печатать как изображение.\par}
+\end{document}
