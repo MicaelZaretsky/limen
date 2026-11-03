@@ -443,8 +443,8 @@ function M.note_font()
     if file and not font_warned then
       font_warned = true
       warn("the font cache holds a path to " .. file:match("[^/\\]*$") .. " that does not lead anywhere from this folder,\n"
-        .. "so LuaTeX will stop with: cannot find file ''. Give fontspec an absolute Path, or delete this font's\n"
-        .. "file in luatex-cache/generic/fonts/otl")
+        .. "so LuaTeX will stop with: cannot find file ''. Delete this font's file in luatex-cache/generic/fonts/otl\n"
+        .. "and build again. An absolute Path alone does not help: the path in the cache wins")
     end
   end
   initial_file = file and file:match("%.%a+$") and file or nil

@@ -299,7 +299,7 @@ If the column has become too narrow, add \cs{limenpause} on that page.
 
 \textbf{Fast editing.} While working on the text, use the option \opt{draft}. The page breaks stay the same.
 
-\textbf{The error cannot find file ''.} The font cache keeps the path by which a font was first loaded. If that path was relative, and another document takes a copy of the same file, with the same size and time, from another folder, LuaLaTeX stops with this error. It comes from the font loader and happens without limen too. An absolute \opt{Path} in \cs{setmainfont} helps, and so does deleting that font's file from the cache folder \opt{luatex-cache/generic/fonts/otl}. In a document with an initial, the package warns about this in the log beforehand.
+\textbf{The error cannot find file ''.} The font cache keeps the path by which a font was first loaded. If that path was relative, and another document takes a copy of the same file, with the same size and time, from another folder, LuaLaTeX stops with this error. It comes from the font loader and happens without limen too. Deleting that font's file from the cache folder \opt{luatex-cache/generic/fonts/otl} helps: the next build writes it again. An absolute \opt{Path} alone does not, because the path in the cache wins. In a document with an initial, the package warns about this in the log beforehand.
 
 \section{How it works}
 
