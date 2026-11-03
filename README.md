@@ -18,7 +18,7 @@ to show. At the threshold the growth begins, and at the end the full spectrum le
 
 Documentation: the guide in [English](doc/limen-guide-en.pdf) and [Russian](doc/limen-guide.pdf), set in limen itself.
 
-Try it without installing anything: open `web/index.html` in a browser to choose a palette, a threshold and a beam.
+Try it without installing anything: [choose a palette, a threshold and a beam in the browser](https://micaelzaretsky.github.io/limen/). The same page is in `web/index.html`.
 
 ## Start
 

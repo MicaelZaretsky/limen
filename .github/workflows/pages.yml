@@ -1,9 +1,9 @@
 # Publishes the page for choosing a palette on GitHub Pages. In the repository settings, set Pages to "GitHub Actions".
-# Written but not yet run.
 name: pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write

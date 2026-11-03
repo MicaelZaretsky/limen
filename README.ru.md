@@ -18,7 +18,7 @@
 
 **Подробное руководство: [`doc/limen-guide.pdf`](doc/limen-guide.pdf)**, на английском [`doc/limen-guide-en.pdf`](doc/limen-guide-en.pdf). Оба оформлены самим пакетом.
 
-Попробовать без установки: откройте в браузере `web/index.html` и подберите палитру, порог и луч.
+Попробовать без установки: [подберите палитру, порог и луч в браузере](https://micaelzaretsky.github.io/limen/). Та же страница лежит в `web/index.html`.
 
 ## Как начать
 
